@@ -1,0 +1,156 @@
+$light-purple: #8b76f7;
+$light-blue: #4285FF;
+
+/* HTML5 elements */
+header, footer, section, nav, menu {
+	display: block;
+}
+
+
+/* cover letter styles */
+* {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	background: #2b2b2b;
+	font: 12px/18px Helvetica, Arial, sans-serif;
+	color: #5c5c5c;
+	text-align: center;
+}
+h1 a:link, h1 a:visited {
+	font-size: 40px;
+	font-weight: normal;
+	color: $light-purple;
+}
+h1 {
+	background: url(/assets/images/arrow.png) no-repeat bottom right;
+	padding-bottom: 82px;
+	width: 715px;
+	line-height: 35px;
+	font-size: 40px;
+	font-weight: normal;
+	color: $light-purple;
+
+  a:link, a:visited {
+    color: $light-purple;
+  }
+}
+h2 {
+	font-size: 21px;
+	font-weight: normal;
+	color: $light-blue;
+	margin-bottom: 20px;
+}
+h3 {
+	font-size: 14px;
+	font-weight: bold;
+	color: #6b6b6b;
+}
+strong {
+	color: #747474;
+}
+a:link, a:visited {
+	color: $light-blue;
+}
+a:hover, a:active {
+	text-decoration: none;
+}
+li {
+	list-style: none;
+}
+fieldset {
+  border: none;
+  margin-bottom: 10px;
+}
+header {
+	height: 214px;
+	background: url(/assets/images/header.png) repeat-x;
+
+  ul {
+	  padding: 36px 0 40px;
+  }
+  li {
+  	display: inline;
+  	font-size: 20px;
+  	margin-right: 10px;
+  	text-decoration: line-through;
+  }
+}
+#light {
+	color: #8c8c8c;
+}
+#medium {
+	color: #5a595a;	
+}
+#dark {
+	color: #3a3b3b;	
+}
+footer section {
+	text-align: right;
+	padding: 30px 0;
+}
+nav {
+	background: #fff;
+
+  a:link, a:visited {
+    font-weight: bold;
+  }
+}
+menu, section {
+	text-align: left;
+	margin: 0 auto;	
+}
+menu {
+	width: 844px;
+	background: url(/assets/images/me.jpg) no-repeat top right;
+	height: 248px;
+	font-size: 14px;
+  
+  li {
+  	position: relative;
+  	top: 35px;
+  	margin-bottom: 10px;
+  	color: #6e6e6e;
+  }
+}
+section {
+  position: relative;
+	width: 944px;
+}
+#about-you, #about-me {
+	width: 441px;
+	float: left;
+}
+#about-you {
+	margin-right: 60px;
+}
+#content {
+	background: #e6e6e6;
+	padding: 30px 0;
+
+  section {
+  	background: url(/assets/images/divider.gif) repeat-y center;
+  }
+  li {
+	  margin-bottom: 15px;
+  }
+  p {
+	  margin-bottom: 10px;
+  }
+}
+#contact {
+	margin-top: 30px;
+
+  section {
+    border: 1px solid #d5d5d5;
+    padding: 20px;
+    width: 500px;
+    background: #f0f0f0;
+  }
+}
+.clear {
+	clear: both;
+}
+

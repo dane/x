@@ -1,0 +1,232 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel="stylesheet" href="/assets/stylesheets/site.css">
+    <script src="/assets/javascripts/analytics.js"></script>
+    <title>Rake Tasks 102 | dane.heroku.com</title>
+  </head>
+  <body>
+    <header>
+  <section class="content">
+    <a href="/">dane.heroku.com</a>
+  </section>
+</header>
+
+    <div id="main-content">
+      <section id="post" class="content">
+        <h1>Rake Tasks 102</h1>
+        <time datetime="2010-06-21T00:00:00Z">June 21, 2010</time>
+        <article><p>This is a follow up post to <a href="/2010/06/rake-tasks-101">Rake Tasks 101</a>. In the 101 post we
+created Rake tasks, setup dependencies and made our tasks reusable by
+passing in parameters. In Rake Tasks 102 we'll be building on those
+practices, interfacing with a Rails environment and leveraging the cron
+to automate our Rake task.</p>
+
+<span id="read-more"></span>
+
+
+<p>Our tasks will search Twitter for any mentions of "daneharrigan" and add
+the most recent to our Tweet model. In this article I'm making a few
+assumptions. You're on a Linux/Unix-based machine. You have <a href="http://rubygems.org/gems/twitter">John
+Nunemaker's Twitter gem</a> installed in
+your Rails project. Lastly, your <code>Tweet</code> model was built with one of the
+two commands:</p>
+
+<h2>Task Setup</h2>
+
+<p>Let's create our Rake file as <code>Rails.root/libs/tasks/twitter.rake</code> and
+get started. First we'll make a reusable task called <code>:search</code> in the
+<code>:twitter</code> namespace. This task will search Twitter for whatever
+parameter we pass it. Next, we'll make a task called <code>:daneharrigan</code>.
+This task will live in a <code>:search</code> namespace, nested in the <code>:twitter</code>
+namespace. You'll notice that we're nesting namespaces because this
+wasn't covered in the 101 post.</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="n">namespace</span> <span class="ss">:twitter</span> <span class="k">do</span>
+  <span class="n">desc</span> <span class="s1">&#39;Search Twitter for the parameter you pass in&#39;</span>
+  <span class="n">task</span> <span class="ss">:search</span><span class="p">,</span> <span class="ss">:query</span> <span class="k">do</span> <span class="o">|</span><span class="n">cmd</span><span class="p">,</span> <span class="n">args</span><span class="o">|</span>
+    <span class="c1"># some very impressive search code...</span>
+    <span class="no">Rake</span><span class="o">::</span><span class="no">Task</span><span class="o">[</span><span class="s1">&#39;twitter:search&#39;</span><span class="o">].</span><span class="n">reenable</span>
+  <span class="k">end</span>
+
+  <span class="n">namespace</span> <span class="ss">:search</span> <span class="k">do</span>
+    <span class="n">desc</span> <span class="s1">&#39;Search Twitter for &quot;@daneharrigan&quot; and save it in the database&#39;</span>
+    <span class="n">task</span> <span class="ss">:daneharrigan</span> <span class="o">=&gt;</span> <span class="ss">:search</span> <span class="k">do</span>
+      <span class="c1"># save results from :search and be happy</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+
+<h2>Instance Variables in Tasks</h2>
+
+<p>Why would we ever want to use instance variables in a Rake task? The
+same reason you use an instance variable in a Ruby class. You want to
+make certain data available to multiple areas of your code. Instance
+variables in Rake tasks are no different, but that instance variable
+will be available to any other task run at that time. For example, if we
+set <code>@name</code> equal to "Dane" in the <code>:search</code> task, we can do puts
+<code>@name</code> in the <code>:daneharrigan</code> task and see the <code>@name</code> output when
+running <code>rake twitter:search:daneharrigan</code>. That makes things really
+easy, but you run the risk of overwriting instance variables from other
+higher level tasks.</p>
+
+<p>I took a look through the Rake tasks that come with Rails 3 and I didn't
+see anything that we could conflict with. I'll digress for just a moment
+and say the "rails:update" task does set the <code>@app_generator</code> instance
+variable so that is a potential conflict, but I can't think of a
+scenario where you'd need to set "rails:update" as a dependency to any
+new task. Please share your scenario if you have one!</p>
+
+<p>Instance variables look safe enough, but I think we could do better. How
+about storing our data in an object?. This sounds a lot safer than using
+instance variables.</p>
+
+<h2>Objects in Tasks</h2>
+
+<p>You can create your class file in <code>Rails.root/lib</code> or
+<code>Rails.root/app/model</code>. Either location will yield identical results for
+what we're doing. As your code changes pick whichever location makes the
+most sense to you. The following is a our object that will store our
+data between Rake tasks:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="k">class</span> <span class="nc">TwitterStore</span>
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">search</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+    <span class="vi">@results</span> <span class="o">=</span> <span class="no">Twitter</span><span class="o">::</span><span class="no">Search</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">latest_result</span>
+    <span class="vi">@results</span><span class="o">.</span><span class="n">first</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+
+<p>The <code>TwitterStore</code> object has only a search method and a results method.
+You can certainly get more fancy at this step or even use an
+<code>ActiveRecord</code> model instead so feel free to use your creative license.</p>
+
+<p>We have our object and we have our task, but at this point Rake is
+unaware of any object or model in Rails --- that includes our nifty
+<code>TwitterStore</code>. Rails comes with a handy <code>:environment</code> task that sets
+up this awareness. We just need to set <code>:environment</code> as a task
+dependency or invoke it within the task. For us, we'll be choosing the
+latter.</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="n">namespace</span> <span class="ss">:twitter</span> <span class="k">do</span>
+  <span class="n">desc</span> <span class="s1">&#39;Search Twitter for the parameter you pass in&#39;</span>
+  <span class="n">task</span> <span class="ss">:search</span><span class="p">,</span> <span class="ss">:query</span> <span class="k">do</span> <span class="o">|</span><span class="n">cmd</span><span class="p">,</span> <span class="n">args</span><span class="o">|</span>
+    <span class="no">Rake</span><span class="o">::</span><span class="no">Task</span><span class="o">[</span><span class="ss">:environment</span><span class="o">].</span><span class="n">invoke</span>
+    <span class="c1"># Rake is now aware of our Rails environment!</span>
+    <span class="no">TwitterStore</span><span class="o">.</span><span class="n">search</span> <span class="n">args</span><span class="o">[</span><span class="ss">:query</span><span class="o">]</span>
+  <span class="k">end</span>
+  <span class="c1"># ...</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+
+<h2>Putting the Pieces Together</h2>
+
+<p>You can see we're putting the pieces together now. We setup the Rails
+environment within our task, called <code>TwitterStore.search</code> and passed
+<code>args[:query]</code> to the search method. Now for the <code>:daneharrigan</code> task.</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="n">task</span> <span class="ss">:daneharrigan</span> <span class="k">do</span>
+  <span class="no">Rake</span><span class="o">::</span><span class="no">Task</span><span class="o">[</span><span class="ss">:search</span><span class="o">].</span><span class="n">invoke</span><span class="p">(</span><span class="s1">&#39;daneharrigan&#39;</span><span class="p">)</span>
+  <span class="n">result</span> <span class="o">=</span> <span class="no">TwitterStore</span><span class="o">.</span><span class="n">latest_result</span>
+  <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="ss">:username</span> <span class="o">=&gt;</span> <span class="n">result</span><span class="o">[</span><span class="ss">:from_user</span><span class="o">]</span><span class="p">,</span>
+    <span class="ss">:message</span> <span class="o">=&gt;</span> <span class="n">result</span><span class="o">[</span><span class="ss">:text</span><span class="o">]</span><span class="p">,</span>
+    <span class="ss">:tweeted_at</span> <span class="o">=&gt;</span> <span class="n">result</span><span class="o">[</span><span class="ss">:created_at</span><span class="o">].</span><span class="n">to_datetime</span>
+  <span class="p">}</span>
+  <span class="no">Tweet</span><span class="o">.</span><span class="n">find_or_create_by_username_and_message_and_tweeted_at</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+
+<p>In the <code>:search</code> task we called <code>TwitterStore.search</code> which makes the
+response available to the <code>:daneharrigan</code> task through the
+<code>latest_result</code> method. I decided to use the <code>find_or_create_by</code> method
+because it's easy enough to show that we don't store the same tweet more
+than once.</p>
+
+<p>Our tasks are complete, let's give it a try, <code>rake
+twitter:search:daneharrigan</code>, then check your <code>Tweet</code> model to see what
+data is populated.</p>
+
+<h2>Cron Jobs</h2>
+
+<p>if you aren't familiar with the cron or a cron job I recommend reading
+over <a href="http://en.wikipedia.org/wiki/Cron">Wikipedia's page</a> on it.</p>
+
+<p>Time to setup our cron job! Before we can start we need to know what the
+cron job does, where does the cron have to be on the system to run
+properly and how often does it run. After we answer those questions we
+put them all together.</p>
+
+<p>When you're answering "what cron job does" make sure to always use full
+paths to your executable files. The cron doesn't have the <code>$PATH</code>
+environmental variable set so it needs to know exactly where files live.
+For example, write <code>/usr/bin/rake twitter:search:daneharrigan</code> opposed
+to <code>rake twitter:search:daneharrigan</code>.</p>
+
+<p>Now "where does the cron have to be in the system to run properly?" We
+know we want to run our Rake task, but that can't be run from just
+anywhere. It needs to run from within our Rails project directory. Let's
+say <code>/home/dane/twitter_store</code>.</p>
+
+<p>Finally, "how often does it run?" How about every 5 minutes? That's
+reflected in the cron as <code>*/5 * * * *</code>.</p>
+
+<p>We've answered all 3 questions so let's put them together.</p>
+
+<div class="highlight"><pre><code class="text">*/5 * * * * cd /home/dane/twitter_store &amp;&amp; /usr/bin/rake
+twitter:search:daneharrigan
+</code></pre>
+</div>
+
+
+<p>You know how a cron entry should look, but how do you actually <em>add</em> an
+entry to the cron? Run <code>crontab -e</code> from the command-line. This will
+launch the system's default editor or whatever you have set in
+<code>$EDITOR</code>. Fill out your entry there, save it and you're set!</p>
+
+<h2>And We're Done</h2>
+
+<p>We created our Rake tasks, made them aware of the Rails environment,
+passed data between tasks through a storage class and added an entry to
+our cron to run every 5 minutes. We're done! I hope this post gave you
+additional understanding to enhance your own tasks. Please do comment if
+there are questions or other areas of Rake you'd like to know about.</p>
+
+<p>I'd like to thank Gokul Janga and Stuart Ellis for suggesting these
+topics from the <a href="/2010/06/rake-tasks-101">Rake Tasks 101</a> comments, thanks guys!</p>
+</article>
+      </section>
+    </div>
+    <footer>
+  <section class="content">
+    <div id="picture"></div>
+    <p>Hi my name is Dane Harrigan. I'm a Heroku engineer working on their API team.
+I'm a Rubyist by choice and trade, but I also enjoy working with Go in my spare
+time. If I'm not hacking on something you'll find me dancing, pretending to know
+what I'm doing on a guitar or playing a video game on easy mode.
+</p>
+    <dl>
+      <dt id="twitter">twitter</dt>
+      <dd><a href="https://twitter.com/daneharrigan">@daneharrigan</a></dd>
+
+      <dt id="github">github</dt>
+      <dd><a href="https://github.com/daneharrigan">daneharrigan</a></dd>
+    </dl>
+  </section>
+</footer>
+
+  </body>
+</html>
+

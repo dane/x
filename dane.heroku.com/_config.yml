@@ -1,0 +1,15 @@
+markdown: rdiscount
+permalink: ":year/:month/:title"
+pygments: true
+exclude: "Gemfile, Gemfile.lock, Procfile, config.ru, README.md, .gitignore"
+
+domain: "dane.heroku.com"
+name: "Dane Harrigan"
+email: "dane@heroku.com"
+twitter: daneharrigan
+github: daneharrigan
+about: |
+  Hi my name is Dane Harrigan. I'm a Heroku engineer working on their API team.
+  I'm a Rubyist by choice and trade, but I also enjoy working with Go in my spare
+  time. If I'm not hacking on something you'll find me dancing, pretending to know
+  what I'm doing on a guitar or playing a video game on easy mode.

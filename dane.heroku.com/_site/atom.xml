@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Dane Harrigan</title>
+  <link href="http://dane.heroku.com/atom.xml" rel="self" />
+  <link href="http://dane.heroku.com/" />
+  <updated>2012-08-08T22:48:20-07:00</updated>
+  <id>http://dane.heroku.com/</id>
+  <author>
+    <name>Dane Harrigan</name>
+    <email>dane@heroku.com</email>
+  </author>
+
+  
+  <entry>
+    <title>Versioning Your API</title>
+    <link href="2012/08/versioning-your-api" />
+    <updated>2012-08-08T00:00:00-07:00</updated>
+    <id>2012/08/versioning-your-api</id>
+    <content type="html">&lt;p&gt;Choosing an API versioning strategy can be difficult. There are many approaches and
+each come with their own pros and cons. Two of the most common practices are to version
+in the URL or with headers.  For Heroku's public API we decided to version with the
+&lt;code&gt;Accept&lt;/code&gt; header.&lt;/p&gt;
+
+&lt;!-- more --&gt;
+
+
+&lt;h2&gt;URL Versioning is Dead Simple&lt;/h2&gt;
+
+&lt;p&gt;If you're not familiar with URL versioning it's simply having the version number as
+part of the URI, for instance, &lt;code&gt;example.com/v2/resources&lt;/code&gt;. This approach is very clear
+and easy to call in code or at the command-line. The problem I see with URL versioning
+is that it's not forgiving. If/when the version is no longer available the server will
+return a &lt;code&gt;404&lt;/code&gt; response.&lt;/p&gt;
+
+&lt;h2&gt;Accept Header Versioning is Forgiving&lt;/h2&gt;
+
+&lt;p&gt;To version with the &lt;code&gt;Accept&lt;/code&gt; header the API has to listen for a custom media type and
+respond accordingly. Github chose the media type &lt;code&gt;application/vnd.github.v3+json&lt;/code&gt;
+where &lt;code&gt;3&lt;/code&gt; is the API version. For Heroku's API we decided on
+&lt;code&gt;application/vnd.heroku+json; version=3&lt;/code&gt;, also where &lt;code&gt;3&lt;/code&gt; is our version of the API.&lt;/p&gt;
+
+&lt;p&gt;In section &lt;a href=&quot;http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1&quot;&gt;14.1 of the HTTP Spec&lt;/a&gt; the document indicates that multiple media types
+can be passed in the &lt;code&gt;Accept&lt;/code&gt; header. If the first media type requested isn't available
+the next type can be returned and it continues down the line. If the following &lt;code&gt;Accept&lt;/code&gt;
+header is sent to an endpoint that does not have a version 3 response it will disregard
+the Heroku media type and return the default response as JSON.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;http&quot;&gt;&lt;span class=&quot;err&quot;&gt;Accept: application/vnd.heroku+json; version=3, application/json&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;I prefer this approach over URL versioning because of the ability to set multiple
+types in one request.&lt;/p&gt;
+
+&lt;h2&gt;Understanding a Custom Media Type&lt;/h2&gt;
+
+&lt;p&gt;A media type consists of two or more parts---type, subtype, and optional parameters.
+The &lt;a href=&quot;http://tools.ietf.org/html/rfc4288#page-9&quot;&gt;Media Type Spec&lt;/a&gt; states the &lt;code&gt;application&lt;/code&gt; type is meant for content that is
+to  be processed by applications before being viewed or usable by a user. That
+sounds perfect for an API.&lt;/p&gt;
+
+&lt;p&gt;Sub types that begin with &lt;code&gt;vnd&lt;/code&gt; are vendor specific media types. These media types
+are defined and controlled by the vendor. Creation of and modifications to vendor
+media types aren't subject to community reviews.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;+json&lt;/code&gt; indicates that the content is a JSON structure. This is key to custom
+media types, whether a vendor type or experimental (prefixed with &lt;code&gt;x-&lt;/code&gt;), because
+it shows how the data should be parsed once received.&lt;/p&gt;
+
+&lt;p&gt;Lastly, parameters allow for additional information to be passed without changing the
+media type. A &lt;code&gt;version&lt;/code&gt; parameter can be used to support multiple API versions during
+a transition period.&lt;/p&gt;
+
+&lt;p&gt;In the case of Heroku's API we will respond to &lt;code&gt;application/json&lt;/code&gt; by default and
+&lt;code&gt;application/vnd.heroku+json; version=2&lt;/code&gt; and &lt;code&gt;application/vnd.heroku+json; version=3&lt;/code&gt;
+upon request. The default response will render the same as &lt;code&gt;vnd.heroku+json; version=2&lt;/code&gt;
+until version 3 is completed and widely adopted. At that point the default
+&lt;code&gt;application/json&lt;/code&gt; response will render the same as &lt;code&gt;vnd.heroku+json; version=3&lt;/code&gt; and
+version 2 will be available through the custom media type.&lt;/p&gt;
+</content>
+  </entry>
+  
+  <entry>
+    <title>People Make Projects Amazing</title>
+    <link href="2011/12/people-make-projects-amazing" />
+    <updated>2011-12-31T00:00:00-08:00</updated>
+    <id>2011/12/people-make-projects-amazing</id>
+    <content type="html">&lt;p&gt;We have many amazing open source projects today, but none of them were
+just amazing overnight and none of them would be considered amazing
+without the people that have and do contribute to them. Projects
+themselves are good ideas, but its the people behind them that make
+them amazing.&lt;/p&gt;
+
+&lt;!-- more --&gt;
+
+
+&lt;h2&gt;It Takes One Bad Experience&lt;/h2&gt;
+
+&lt;p&gt;It's not easy to get people contributing to an open source project, but
+it's really easy to make sure they &lt;em&gt;don't&lt;/em&gt;. When new people try to get
+involved with a project they're excited and eager to participate.
+Contacting a mailing list, commenting on a blog post or sending a pull
+request is the start of a conversation between the project developers
+and a potential contributor.&lt;/p&gt;
+
+&lt;p&gt;Not all opinions or code offered fit a project or the direction a
+project wants to go in. That's okay, but how this message is relayed
+makes all the difference in the world.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;text&quot;&gt;Newcomer: This project is awesome, but this feature would make it better!
+Project Developer: No. Bad idea.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;This is a terrible response. It's not helpful whatsoever and it will
+leave the newcomer with a bad taste of the project. He or she may
+continue to use the project, but good luck getting any type of help from
+this person down the road.&lt;/p&gt;
+
+&lt;p&gt;If the feature (eg: a suggestion or code offered) doesn't fit the direction
+of the project explain why. If the feature has been declined in the past
+point the user to the thread. Help them get to where you are.&lt;/p&gt;
+
+&lt;p&gt;Here's a better response.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;text&quot;&gt;Newcomer: This project is awesome, but this feature would make it better!
+Project Developer: Glad you like it. We actually have history with this feature
+                   request checkout the thread at http://...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;The thread may delcine the feature request, but it sheds light on why
+and shares any meaningful conversations held on the topic. It's helpful,
+educational and steers any future viewers to the same conclusion. It's a
+huge win!&lt;/p&gt;
+
+&lt;h2&gt;Great Goes a Long Way&lt;/h2&gt;
+
+&lt;p&gt;When I think of amazing projects I think of the great people that have
+brought them there. Immediately I think of &lt;a href=&quot;http://rubini.us&quot;&gt;Rubinius&lt;/a&gt;, &lt;a href=&quot;http://sass-lang.com&quot;&gt;Sass&lt;/a&gt; and
+&lt;a href=&quot;http://compass-style.org&quot;&gt;Compass&lt;/a&gt; just to name a few.&lt;/p&gt;
+
+&lt;p&gt;All three projects are great ideas, but the people that put their time
+into the projects really make them amazing.&lt;/p&gt;
+
+&lt;p&gt;Recently I've been working on &lt;a href=&quot;http://rubini.us&quot;&gt;Rubinius&lt;/a&gt; and it's been a wonderful
+experience. My first pull request had working/passing code, but it
+wasn't quite as they thought it should be. Sergey Nartimov (&lt;a href=&quot;https://github.com/lest&quot;&gt;lest&lt;/a&gt;)
+and Brian Ford (&lt;a href=&quot;http://twitter.com/brixen&quot;&gt;@brixen&lt;/a&gt;) gave input and better code suggestions to
+help bring my code up to par. With changes applied and commits squashed
+the request was merged in.&lt;/p&gt;
+
+&lt;p&gt;It was a great first experience to the Rubinius project and I was excited
+to do more. Because the team took the time to help me understand what
+they were looking for, the next three pull requests were merged without a
+problem.&lt;/p&gt;
+
+&lt;p&gt;When I started approaching more challenging areas of Ruby's feature set
+I needed help so I jumped back into IRC where Brian Ford and Evan Phoenix
+(&lt;a href=&quot;http://twitter.com/evanphx&quot;&gt;@evanphx&lt;/a&gt;) continued to extremely helpful. From looking at code
+with me, sending links to MSpec documentation, or filling out more
+RubySpecs, they've been doing what they can to make my time coding
+amazing.&lt;/p&gt;
+
+&lt;p&gt;It's experiences like this, I believe,  that make a project amazing. And
+it's the people that make the experience.&lt;/p&gt;
+
+&lt;p&gt;It started out with suggestions on a pull request and now I encourage
+my friends to try Rubinius, show them how easy it is to contribute and
+I'm writing about it now. A great experience really does go a long way.&lt;/p&gt;
+</content>
+  </entry>
+  
+  <entry>
+    <title>Rake Tasks 102</title>
+    <link href="2010/06/rake-tasks-102" />
+    <updated>2010-06-21T00:00:00-07:00</updated>
+    <id>2010/06/rake-tasks-102</id>
+    <content type="html">&lt;p&gt;This is a follow up post to &lt;a href=&quot;/2010/06/rake-tasks-101&quot;&gt;Rake Tasks 101&lt;/a&gt;. In the 101 post we
+created Rake tasks, setup dependencies and made our tasks reusable by
+passing in parameters. In Rake Tasks 102 we'll be building on those
+practices, interfacing with a Rails environment and leveraging the cron
+to automate our Rake task.&lt;/p&gt;
+
+&lt;!-- more --&gt;
+
+
+&lt;p&gt;Our tasks will search Twitter for any mentions of &quot;daneharrigan&quot; and add
+the most recent to our Tweet model. In this article I'm making a few
+assumptions. You're on a Linux/Unix-based machine. You have &lt;a href=&quot;http://rubygems.org/gems/twitter&quot;&gt;John
+Nunemaker's Twitter gem&lt;/a&gt; installed in
+your Rails project. Lastly, your &lt;code&gt;Tweet&lt;/code&gt; model was built with one of the
+two commands:&lt;/p&gt;
+
+&lt;h2&gt;Task Setup&lt;/h2&gt;
+
+&lt;p&gt;Let's create our Rake file as &lt;code&gt;Rails.root/libs/tasks/twitter.rake&lt;/code&gt; and
+get started. First we'll make a reusable task called &lt;code&gt;:search&lt;/code&gt; in the
+&lt;code&gt;:twitter&lt;/code&gt; namespace. This task will search Twitter for whatever
+parameter we pass it. Next, we'll make a task called &lt;code&gt;:daneharrigan&lt;/code&gt;.
+This task will live in a &lt;code&gt;:search&lt;/code&gt; namespace, nested in the &lt;code&gt;:twitter&lt;/code&gt;
+namespace. You'll notice that we're nesting namespaces because this
+wasn't covered in the 101 post.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;namespace&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:twitter&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;desc&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;Search Twitter for the parameter you pass in&amp;#39;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;task&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:search&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:query&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cmd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;# some very impressive search code...&lt;/span&gt;
+    &lt;span class=&quot;no&quot;&gt;Rake&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Task&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;twitter:search&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reenable&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;namespace&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:search&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;desc&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;Search Twitter for &amp;quot;@daneharrigan&amp;quot; and save it in the database&amp;#39;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;task&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:daneharrigan&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:search&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+      &lt;span class=&quot;c1&quot;&gt;# save results from :search and be happy&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+
+&lt;h2&gt;Instance Variables in Tasks&lt;/h2&gt;
+
+&lt;p&gt;Why would we ever want to use instance variables in a Rake task? The
+same reason you use an instance variable in a Ruby class. You want to
+make certain data available to multiple areas of your code. Instance
+variables in Rake tasks are no different, but that instance variable
+will be available to any other task run at that time. For example, if we
+set &lt;code&gt;@name&lt;/code&gt; equal to &quot;Dane&quot; in the &lt;code&gt;:search&lt;/code&gt; task, we can do puts
+&lt;code&gt;@name&lt;/code&gt; in the &lt;code&gt;:daneharrigan&lt;/code&gt; task and see the &lt;code&gt;@name&lt;/code&gt; output when
+running &lt;code&gt;rake twitter:search:daneharrigan&lt;/code&gt;. That makes things really
+easy, but you run the risk of overwriting instance variables from other
+higher level tasks.&lt;/p&gt;
+
+&lt;p&gt;I took a look through the Rake tasks that come with Rails 3 and I didn't
+see anything that we could conflict with. I'll digress for just a moment
+and say the &quot;rails:update&quot; task does set the &lt;code&gt;@app_generator&lt;/code&gt; instance
+variable so that is a potential conflict, but I can't think of a
+scenario where you'd need to set &quot;rails:update&quot; as a dependency to any
+new task. Please share your scenario if you have one!&lt;/p&gt;
+
+&lt;p&gt;Instance variables look safe enough, but I think we could do better. How
+about storing our data in an object?. This sounds a lot safer than using
+instance variables.&lt;/p&gt;
+
+&lt;h2&gt;Objects in Tasks&lt;/h2&gt;
+
+&lt;p&gt;You can create your class file in &lt;code&gt;Rails.root/lib&lt;/code&gt; or
+&lt;code&gt;Rails.root/app/model&lt;/code&gt;. Either location will yield identical results for
+what we're doing. As your code changes pick whichever location makes the
+most sense to you. The following is a our object that will store our
+data between Rake tasks:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;TwitterStore&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;search&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;query&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@results&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Twitter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Search&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;query&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;latest_result&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@results&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;first&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;The &lt;code&gt;TwitterStore&lt;/code&gt; object has only a search method and a results method.
+You can certainly get more fancy at this step or even use an
+&lt;code&gt;ActiveRecord&lt;/code&gt; model instead so feel free to use your creative license.&lt;/p&gt;
+
+&lt;p&gt;We have our object and we have our task, but at this point Rake is
+unaware of any object or model in Rails --- that includes our nifty
+&lt;code&gt;TwitterStore&lt;/code&gt;. Rails comes with a handy &lt;code&gt;:environment&lt;/code&gt; task that sets
+up this awareness. We just need to set &lt;code&gt;:environment&lt;/code&gt; as a task
+dependency or invoke it within the task. For us, we'll be choosing the
+latter.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;namespace&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:twitter&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;desc&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;Search Twitter for the parameter you pass in&amp;#39;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;task&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:search&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:query&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cmd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+    &lt;span class=&quot;no&quot;&gt;Rake&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Task&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:environment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;invoke&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;# Rake is now aware of our Rails environment!&lt;/span&gt;
+    &lt;span class=&quot;no&quot;&gt;TwitterStore&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;search&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:query&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# ...&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+
+&lt;h2&gt;Putting the Pieces Together&lt;/h2&gt;
+
+&lt;p&gt;You can see we're putting the pieces together now. We setup the Rails
+environment within our task, called &lt;code&gt;TwitterStore.search&lt;/code&gt; and passed
+&lt;code&gt;args[:query]&lt;/code&gt; to the search method. Now for the &lt;code&gt;:daneharrigan&lt;/code&gt; task.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;task&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:daneharrigan&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;no&quot;&gt;Rake&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Task&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:search&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;invoke&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;daneharrigan&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;TwitterStore&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;latest_result&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;params&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;:username&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:from_user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;:message&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:text&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;:tweeted_at&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:created_at&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to_datetime&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;no&quot;&gt;Tweet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;find_or_create_by_username_and_message_and_tweeted_at&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;params&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;In the &lt;code&gt;:search&lt;/code&gt; task we called &lt;code&gt;TwitterStore.search&lt;/code&gt; which makes the
+response available to the &lt;code&gt;:daneharrigan&lt;/code&gt; task through the
+&lt;code&gt;latest_result&lt;/code&gt; method. I decided to use the &lt;code&gt;find_or_create_by&lt;/code&gt; method
+because it's easy enough to show that we don't store the same tweet more
+than once.&lt;/p&gt;
+
+&lt;p&gt;Our tasks are complete, let's give it a try, &lt;code&gt;rake
+twitter:search:daneharrigan&lt;/code&gt;, then check your &lt;code&gt;Tweet&lt;/code&gt; model to see what
+data is populated.&lt;/p&gt;
+
+&lt;h2&gt;Cron Jobs&lt;/h2&gt;
+
+&lt;p&gt;if you aren't familiar with the cron or a cron job I recommend reading
+over &lt;a href=&quot;http://en.wikipedia.org/wiki/Cron&quot;&gt;Wikipedia's page&lt;/a&gt; on it.&lt;/p&gt;
+
+&lt;p&gt;Time to setup our cron job! Before we can start we need to know what the
+cron job does, where does the cron have to be on the system to run
+properly and how often does it run. After we answer those questions we
+put them all together.&lt;/p&gt;
+
+&lt;p&gt;When you're answering &quot;what cron job does&quot; make sure to always use full
+paths to your executable files. The cron doesn't have the &lt;code&gt;$PATH&lt;/code&gt;
+environmental variable set so it needs to know exactly where files live.
+For example, write &lt;code&gt;/usr/bin/rake twitter:search:daneharrigan&lt;/code&gt; opposed
+to &lt;code&gt;rake twitter:search:daneharrigan&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Now &quot;where does the cron have to be in the system to run properly?&quot; We
+know we want to run our Rake task, but that can't be run from just
+anywhere. It needs to run from within our Rails project directory. Let's
+say &lt;code&gt;/home/dane/twitter_store&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Finally, &quot;how often does it run?&quot; How about every 5 minutes? That's
+reflected in the cron as &lt;code&gt;*/5 * * * *&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;We've answered all 3 questions so let's put them together.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;text&quot;&gt;*/5 * * * * cd /home/dane/twitter_store &amp;amp;&amp;amp; /usr/bin/rake
+twitter:search:daneharrigan
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;You know how a cron entry should look, but how do you actually &lt;em&gt;add&lt;/em&gt; an
+entry to the cron? Run &lt;code&gt;crontab -e&lt;/code&gt; from the command-line. This will
+launch the system's default editor or whatever you have set in
+&lt;code&gt;$EDITOR&lt;/code&gt;. Fill out your entry there, save it and you're set!&lt;/p&gt;
+
+&lt;h2&gt;And We're Done&lt;/h2&gt;
+
+&lt;p&gt;We created our Rake tasks, made them aware of the Rails environment,
+passed data between tasks through a storage class and added an entry to
+our cron to run every 5 minutes. We're done! I hope this post gave you
+additional understanding to enhance your own tasks. Please do comment if
+there are questions or other areas of Rake you'd like to know about.&lt;/p&gt;
+
+&lt;p&gt;I'd like to thank Gokul Janga and Stuart Ellis for suggesting these
+topics from the &lt;a href=&quot;/2010/06/rake-tasks-101&quot;&gt;Rake Tasks 101&lt;/a&gt; comments, thanks guys!&lt;/p&gt;
+</content>
+  </entry>
+  
+  <entry>
+    <title>Rake Tasks 101</title>
+    <link href="2010/06/rake-tasks-101" />
+    <updated>2010-06-06T00:00:00-07:00</updated>
+    <id>2010/06/rake-tasks-101</id>
+    <content type="html">&lt;p&gt;I've been working with Rake quite a bit on my current project so I
+thought I'd share some beginner tips.&lt;/p&gt;
+
+&lt;p&gt;Before I go into Rake, what is it? Rake is a Ruby-based build program.
+Ruby on Rails uses Rake quite a bit in it's process. If you've worked on
+a Rails project you'll used one, some or all of the following: rake
+db:create, rake gems:unpack, rake db:migrate, and  rake test. Now that's
+not all of Rail's Rake tasks, just some common ones.&lt;/p&gt;
+
+&lt;p&gt;You're here to make your own Rake tasks so lets get started!&lt;/p&gt;
+
+&lt;!-- more --&gt;
+
+
+&lt;h2&gt;Make Your Task&lt;/h2&gt;
+
+&lt;p&gt;Rake files can live within plugins or in your &lt;code&gt;Rails.root/lib/tasks&lt;/code&gt;
+directory. In this post I'll be referencing the latter. Let's create our
+new rake file: &lt;code&gt;Rails.root/lib/tasks/manners.rake&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Next we can declare our Rake task in the manners.rake file:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;namespace&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:manners&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;desc&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;the description of what my rake task will do&amp;#39;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;task&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:greet&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;Hello from Rake&amp;#39;&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;After thats done we should be able to execute our new task at the
+command-line with &lt;code&gt;rake manners:greet&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h2&gt;Task Variables&lt;/h2&gt;
+
+&lt;p&gt;Let's make the Rake task reusable. To do this we'll pass in some
+variables. Rewrite the task block of the manners.rake file like this:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;task&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:greet&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:name&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cmd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;command: &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cmd&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;args: &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;inspect&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;The output you receive from running the task again should look like
+this:&lt;/p&gt;
+
+&lt;p&gt;Now run the task again, but define the variable by calling it like this,
+&lt;code&gt;rake manners:greet[Dane]&lt;/code&gt;. That should yield:&lt;/p&gt;
+
+&lt;p&gt;This is where Rake tasks get interesting. Rake always passes in the
+command run into the task block as the first variable, thats why we see
+&quot;command: manners:greet.&quot;  The second variable defines the hash that
+will contain all the variables passed into the the Rake task. The args
+hash index is any symbol that follows the task name symbol. We set
+&lt;code&gt;:greet&lt;/code&gt; as the task name so :name becomes an available index in the args
+hash.&lt;/p&gt;
+
+&lt;p&gt;Lets rework the &lt;code&gt;:greet&lt;/code&gt; task a little bit by defining our variables as
+&lt;code&gt;:first_name&lt;/code&gt; and &lt;code&gt;:last_name&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;task&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:greet&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:first_name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:last_name&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cmd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Good day &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:first_name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:last_name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;Run the Rake task and define both variables, &lt;code&gt;rake
+manners:greet[Dane,Harrigan]&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Spaces are not allowed when passing variables into a Rake task when
+calling it at the command-line. This is why its written as
+&lt;code&gt;[Dane,Harrigan]&lt;/code&gt; and not &lt;code&gt;[Dane, Harrigan]&lt;/code&gt;. Quotes can be used if
+spaces are necessary to a variable for example, &lt;code&gt;rake manners:greet['Mr.
+Dane',Harrigan]&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h2&gt;Rake Dependencies&lt;/h2&gt;
+
+&lt;p&gt;We've built a Rake task so now lets make another and have it depend on
+&lt;code&gt;manners:greet&lt;/code&gt;. Add a &lt;code&gt;manners:question&lt;/code&gt; task that asks, &quot;How are you?&quot;
+Start by just making a Rake task like we did with &lt;code&gt;manners:greet&lt;/code&gt;. To
+make the &lt;code&gt;:question&lt;/code&gt; task dependent on &lt;code&gt;:greet&lt;/code&gt; define the task as &lt;code&gt;task
+:question =&amp;gt; 'manners:greet'&lt;/code&gt;. Our &lt;code&gt;manners.rake&lt;/code&gt; file should look like
+this:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;namespace&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:manners&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;desc&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;Greet the Rake user&amp;#39;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;task&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:greet&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:first_name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:last_name&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cmd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+    &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Good day &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:first_name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:last_name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;desc&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;Ask a question&amp;#39;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;task&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:question&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;manners:greet&amp;#39;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;How are you doing?&amp;#39;&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;If we run rake &lt;code&gt;manners:question&lt;/code&gt; you'll see that it greets us with,
+&quot;Good day,&quot; and, &quot;How are you doing?&quot; but we can't set variables in a
+task dependency when its declared this way. Defining the dependency this
+way doesn't work either, &lt;code&gt;task :question =&amp;gt;
+'manners:greet[Dane,Harrigan]'&lt;/code&gt;. Let's remove the 'manners:greet'
+dependency and call &lt;code&gt;invoke&lt;/code&gt; on it instead.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;task&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:question&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;no&quot;&gt;Rake&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Tasks&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;manners:greet&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;invoke&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;Dane&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;Harrigan&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;How are you doing?&amp;#39;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;Now when we run the task you'll see a greeting to Dane and the question.&lt;/p&gt;
+
+&lt;h2&gt;Tasks Run Once&lt;/h2&gt;
+
+&lt;p&gt;When calling a task with &lt;code&gt;invoke&lt;/code&gt; or &lt;code&gt;execute&lt;/code&gt; Rake keeps track of
+whether or not it has already run. If the task has run already it wont
+run a second time. If we did the following you'll only see one greeting.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;task&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:question&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;no&quot;&gt;Rake&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Task&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;manners:greet&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;invoke&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;Dane&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;Harrigan&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;no&quot;&gt;Rake&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Task&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;manners:greet&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;invoke&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;John&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;Smith&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;How are you doing?&amp;#39;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;You won't see the greeting to John Smith. Well that's rude, but we can
+fix this easily. If you want to call the task multiple times you'll need
+to &lt;code&gt;reenable&lt;/code&gt; the task each time before calling it. You can &lt;code&gt;reenable&lt;/code&gt; a
+task anywhere, but I've found it makes the most sense to call &lt;code&gt;reenable&lt;/code&gt;
+at the end of the task block of the one being reenabled. In our example
+we'll call &lt;code&gt;reenable&lt;/code&gt; inside of task &lt;code&gt;:greet&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;ruby&quot;&gt;&lt;span class=&quot;n&quot;&gt;task&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:greet&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:first_name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:last_name&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cmd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Good day &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:first_name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt; &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:last_name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;no&quot;&gt;Rake&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Task&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;manners:greet&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reenable&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;Now if we call &lt;code&gt;rake manners:question&lt;/code&gt; we'll see both greetings.
+Perfect!&lt;/p&gt;
+
+&lt;h2&gt;And We're Done&lt;/h2&gt;
+
+&lt;p&gt;Rake is a very nice piece of software and I encourage others to read up
+on it. I hope this  post gave you enough understanding to start writing
+your own tasks. Also, please do comment if there are questions or other
+areas of Rake you'd like to know about. A Rake Tasks 102 post perhaps?&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;/2010/06/rake-tasks-102&quot;&gt;Rake Tasks 102 is up!&lt;/a&gt; If
+you liked Rake Tasks 101, I think you'll enjoy 102 just as much.&lt;/p&gt;
+</content>
+  </entry>
+  
+</feed>

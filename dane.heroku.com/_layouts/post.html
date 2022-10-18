@@ -1,0 +1,20 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel="stylesheet" href="/assets/stylesheets/site.css">
+    <script src="/assets/javascripts/analytics.js"></script>
+    <title>{{ page.title }} | dane.heroku.com</title>
+  </head>
+  <body>
+    {% include header.html %}
+    <div id="main-content">
+      <section id="post" class="content">
+        <h1>{{ page.title }}</h1>
+        <time datetime="{{ page.date | date: "%Y-%m-%dT%H:%M:%SZ" }}">{{ page.date | date: "%B %e, %Y" }}</time>
+        <article>{{ content | full_article }}</article>
+      </section>
+    </div>
+    {% include footer.html %}
+  </body>
+</html>
+

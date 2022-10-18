@@ -1,0 +1,104 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel="stylesheet" href="/assets/stylesheets/site.css">
+    <script src="/assets/javascripts/analytics.js"></script>
+    <title>Versioning Your API | dane.heroku.com</title>
+  </head>
+  <body>
+    <header>
+  <section class="content">
+    <a href="/">dane.heroku.com</a>
+  </section>
+</header>
+
+    <div id="main-content">
+      <section id="post" class="content">
+        <h1>Versioning Your API</h1>
+        <time datetime="2012-08-08T00:00:00Z">August  8, 2012</time>
+        <article><p>Choosing an API versioning strategy can be difficult. There are many approaches and
+each come with their own pros and cons. Two of the most common practices are to version
+in the URL or with headers.  For Heroku's public API we decided to version with the
+<code>Accept</code> header.</p>
+
+<span id="read-more"></span>
+
+
+<h2>URL Versioning is Dead Simple</h2>
+
+<p>If you're not familiar with URL versioning it's simply having the version number as
+part of the URI, for instance, <code>example.com/v2/resources</code>. This approach is very clear
+and easy to call in code or at the command-line. The problem I see with URL versioning
+is that it's not forgiving. If/when the version is no longer available the server will
+return a <code>404</code> response.</p>
+
+<h2>Accept Header Versioning is Forgiving</h2>
+
+<p>To version with the <code>Accept</code> header the API has to listen for a custom media type and
+respond accordingly. Github chose the media type <code>application/vnd.github.v3+json</code>
+where <code>3</code> is the API version. For Heroku's API we decided on
+<code>application/vnd.heroku+json; version=3</code>, also where <code>3</code> is our version of the API.</p>
+
+<p>In section <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1">14.1 of the HTTP Spec</a> the document indicates that multiple media types
+can be passed in the <code>Accept</code> header. If the first media type requested isn't available
+the next type can be returned and it continues down the line. If the following <code>Accept</code>
+header is sent to an endpoint that does not have a version 3 response it will disregard
+the Heroku media type and return the default response as JSON.</p>
+
+<div class="highlight"><pre><code class="http"><span class="err">Accept: application/vnd.heroku+json; version=3, application/json</span>
+</code></pre>
+</div>
+
+
+<p>I prefer this approach over URL versioning because of the ability to set multiple
+types in one request.</p>
+
+<h2>Understanding a Custom Media Type</h2>
+
+<p>A media type consists of two or more parts---type, subtype, and optional parameters.
+The <a href="http://tools.ietf.org/html/rfc4288#page-9">Media Type Spec</a> states the <code>application</code> type is meant for content that is
+to  be processed by applications before being viewed or usable by a user. That
+sounds perfect for an API.</p>
+
+<p>Sub types that begin with <code>vnd</code> are vendor specific media types. These media types
+are defined and controlled by the vendor. Creation of and modifications to vendor
+media types aren't subject to community reviews.</p>
+
+<p>The <code>+json</code> indicates that the content is a JSON structure. This is key to custom
+media types, whether a vendor type or experimental (prefixed with <code>x-</code>), because
+it shows how the data should be parsed once received.</p>
+
+<p>Lastly, parameters allow for additional information to be passed without changing the
+media type. A <code>version</code> parameter can be used to support multiple API versions during
+a transition period.</p>
+
+<p>In the case of Heroku's API we will respond to <code>application/json</code> by default and
+<code>application/vnd.heroku+json; version=2</code> and <code>application/vnd.heroku+json; version=3</code>
+upon request. The default response will render the same as <code>vnd.heroku+json; version=2</code>
+until version 3 is completed and widely adopted. At that point the default
+<code>application/json</code> response will render the same as <code>vnd.heroku+json; version=3</code> and
+version 2 will be available through the custom media type.</p>
+</article>
+      </section>
+    </div>
+    <footer>
+  <section class="content">
+    <div id="picture"></div>
+    <p>Hi my name is Dane Harrigan. I'm a Heroku engineer working on their API team.
+I'm a Rubyist by choice and trade, but I also enjoy working with Go in my spare
+time. If I'm not hacking on something you'll find me dancing, pretending to know
+what I'm doing on a guitar or playing a video game on easy mode.
+</p>
+    <dl>
+      <dt id="twitter">twitter</dt>
+      <dd><a href="https://twitter.com/daneharrigan">@daneharrigan</a></dd>
+
+      <dt id="github">github</dt>
+      <dd><a href="https://github.com/daneharrigan">daneharrigan</a></dd>
+    </dl>
+  </section>
+</footer>
+
+  </body>
+</html>
+

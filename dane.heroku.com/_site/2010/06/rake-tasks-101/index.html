@@ -1,0 +1,206 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel="stylesheet" href="/assets/stylesheets/site.css">
+    <script src="/assets/javascripts/analytics.js"></script>
+    <title>Rake Tasks 101 | dane.heroku.com</title>
+  </head>
+  <body>
+    <header>
+  <section class="content">
+    <a href="/">dane.heroku.com</a>
+  </section>
+</header>
+
+    <div id="main-content">
+      <section id="post" class="content">
+        <h1>Rake Tasks 101</h1>
+        <time datetime="2010-06-06T00:00:00Z">June  6, 2010</time>
+        <article><p>I've been working with Rake quite a bit on my current project so I
+thought I'd share some beginner tips.</p>
+
+<p>Before I go into Rake, what is it? Rake is a Ruby-based build program.
+Ruby on Rails uses Rake quite a bit in it's process. If you've worked on
+a Rails project you'll used one, some or all of the following: rake
+db:create, rake gems:unpack, rake db:migrate, and  rake test. Now that's
+not all of Rail's Rake tasks, just some common ones.</p>
+
+<p>You're here to make your own Rake tasks so lets get started!</p>
+
+<span id="read-more"></span>
+
+
+<h2>Make Your Task</h2>
+
+<p>Rake files can live within plugins or in your <code>Rails.root/lib/tasks</code>
+directory. In this post I'll be referencing the latter. Let's create our
+new rake file: <code>Rails.root/lib/tasks/manners.rake</code></p>
+
+<p>Next we can declare our Rake task in the manners.rake file:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="n">namespace</span> <span class="ss">:manners</span> <span class="k">do</span>
+  <span class="n">desc</span> <span class="s1">&#39;the description of what my rake task will do&#39;</span>
+  <span class="n">task</span> <span class="ss">:greet</span> <span class="k">do</span>
+    <span class="nb">puts</span> <span class="s1">&#39;Hello from Rake&#39;</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+
+<p>After thats done we should be able to execute our new task at the
+command-line with <code>rake manners:greet</code>.</p>
+
+<h2>Task Variables</h2>
+
+<p>Let's make the Rake task reusable. To do this we'll pass in some
+variables. Rewrite the task block of the manners.rake file like this:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="n">task</span> <span class="ss">:greet</span><span class="p">,</span> <span class="ss">:name</span> <span class="k">do</span> <span class="o">|</span><span class="n">cmd</span><span class="p">,</span> <span class="n">args</span><span class="o">|</span>
+  <span class="nb">puts</span> <span class="s2">&quot;command: </span><span class="si">#{</span><span class="n">cmd</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="nb">puts</span> <span class="s2">&quot;args: </span><span class="si">#{</span><span class="n">args</span><span class="o">.</span><span class="n">inspect</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+
+<p>The output you receive from running the task again should look like
+this:</p>
+
+<p>Now run the task again, but define the variable by calling it like this,
+<code>rake manners:greet[Dane]</code>. That should yield:</p>
+
+<p>This is where Rake tasks get interesting. Rake always passes in the
+command run into the task block as the first variable, thats why we see
+"command: manners:greet."  The second variable defines the hash that
+will contain all the variables passed into the the Rake task. The args
+hash index is any symbol that follows the task name symbol. We set
+<code>:greet</code> as the task name so :name becomes an available index in the args
+hash.</p>
+
+<p>Lets rework the <code>:greet</code> task a little bit by defining our variables as
+<code>:first_name</code> and <code>:last_name</code>.</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="n">task</span> <span class="ss">:greet</span><span class="p">,</span> <span class="ss">:first_name</span><span class="p">,</span> <span class="ss">:last_name</span> <span class="k">do</span> <span class="o">|</span><span class="n">cmd</span><span class="p">,</span> <span class="n">args</span><span class="o">|</span>
+  <span class="nb">puts</span> <span class="s2">&quot;Good day </span><span class="si">#{</span><span class="n">args</span><span class="o">[</span><span class="ss">:first_name</span><span class="o">]</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">args</span><span class="o">[</span><span class="ss">:last_name</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+
+<p>Run the Rake task and define both variables, <code>rake
+manners:greet[Dane,Harrigan]</code>.</p>
+
+<p>Spaces are not allowed when passing variables into a Rake task when
+calling it at the command-line. This is why its written as
+<code>[Dane,Harrigan]</code> and not <code>[Dane, Harrigan]</code>. Quotes can be used if
+spaces are necessary to a variable for example, <code>rake manners:greet['Mr.
+Dane',Harrigan]</code>.</p>
+
+<h2>Rake Dependencies</h2>
+
+<p>We've built a Rake task so now lets make another and have it depend on
+<code>manners:greet</code>. Add a <code>manners:question</code> task that asks, "How are you?"
+Start by just making a Rake task like we did with <code>manners:greet</code>. To
+make the <code>:question</code> task dependent on <code>:greet</code> define the task as <code>task
+:question =&gt; 'manners:greet'</code>. Our <code>manners.rake</code> file should look like
+this:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="n">namespace</span> <span class="ss">:manners</span> <span class="k">do</span>
+  <span class="n">desc</span> <span class="s1">&#39;Greet the Rake user&#39;</span>
+  <span class="n">task</span> <span class="ss">:greet</span><span class="p">,</span> <span class="ss">:first_name</span><span class="p">,</span> <span class="ss">:last_name</span> <span class="k">do</span> <span class="o">|</span><span class="n">cmd</span><span class="p">,</span> <span class="n">args</span><span class="o">|</span>
+    <span class="nb">puts</span> <span class="s2">&quot;Good day </span><span class="si">#{</span><span class="n">args</span><span class="o">[</span><span class="ss">:first_name</span><span class="o">]</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">args</span><span class="o">[</span><span class="ss">:last_name</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="k">end</span>
+
+  <span class="n">desc</span> <span class="s1">&#39;Ask a question&#39;</span>
+  <span class="n">task</span> <span class="ss">:question</span> <span class="o">=&gt;</span> <span class="s1">&#39;manners:greet&#39;</span> <span class="k">do</span>
+    <span class="nb">puts</span> <span class="s1">&#39;How are you doing?&#39;</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+
+<p>If we run rake <code>manners:question</code> you'll see that it greets us with,
+"Good day," and, "How are you doing?" but we can't set variables in a
+task dependency when its declared this way. Defining the dependency this
+way doesn't work either, <code>task :question =&gt;
+'manners:greet[Dane,Harrigan]'</code>. Let's remove the 'manners:greet'
+dependency and call <code>invoke</code> on it instead.</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="n">task</span> <span class="ss">:question</span> <span class="k">do</span>
+  <span class="no">Rake</span><span class="o">::</span><span class="no">Tasks</span><span class="o">[</span><span class="s1">&#39;manners:greet&#39;</span><span class="o">].</span><span class="n">invoke</span><span class="p">(</span><span class="s1">&#39;Dane&#39;</span><span class="p">,</span><span class="s1">&#39;Harrigan&#39;</span><span class="p">)</span>
+  <span class="nb">puts</span> <span class="s1">&#39;How are you doing?&#39;</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+
+<p>Now when we run the task you'll see a greeting to Dane and the question.</p>
+
+<h2>Tasks Run Once</h2>
+
+<p>When calling a task with <code>invoke</code> or <code>execute</code> Rake keeps track of
+whether or not it has already run. If the task has run already it wont
+run a second time. If we did the following you'll only see one greeting.</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="n">task</span> <span class="ss">:question</span> <span class="k">do</span>
+  <span class="no">Rake</span><span class="o">::</span><span class="no">Task</span><span class="o">[</span><span class="s1">&#39;manners:greet&#39;</span><span class="o">].</span><span class="n">invoke</span><span class="p">(</span><span class="s1">&#39;Dane&#39;</span><span class="p">,</span><span class="s1">&#39;Harrigan&#39;</span><span class="p">)</span>
+  <span class="no">Rake</span><span class="o">::</span><span class="no">Task</span><span class="o">[</span><span class="s1">&#39;manners:greet&#39;</span><span class="o">].</span><span class="n">invoke</span><span class="p">(</span><span class="s1">&#39;John&#39;</span><span class="p">,</span><span class="s1">&#39;Smith&#39;</span><span class="p">)</span>
+  <span class="nb">puts</span> <span class="s1">&#39;How are you doing?&#39;</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+
+<p>You won't see the greeting to John Smith. Well that's rude, but we can
+fix this easily. If you want to call the task multiple times you'll need
+to <code>reenable</code> the task each time before calling it. You can <code>reenable</code> a
+task anywhere, but I've found it makes the most sense to call <code>reenable</code>
+at the end of the task block of the one being reenabled. In our example
+we'll call <code>reenable</code> inside of task <code>:greet</code>.</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="n">task</span> <span class="ss">:greet</span><span class="p">,</span> <span class="ss">:first_name</span><span class="p">,</span> <span class="ss">:last_name</span> <span class="k">do</span> <span class="o">|</span><span class="n">cmd</span><span class="p">,</span> <span class="n">args</span><span class="o">|</span>
+  <span class="nb">puts</span> <span class="s2">&quot;Good day </span><span class="si">#{</span><span class="n">args</span><span class="o">[</span><span class="ss">:first_name</span><span class="o">]</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">args</span><span class="o">[</span><span class="ss">:last_name</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="no">Rake</span><span class="o">::</span><span class="no">Task</span><span class="o">[</span><span class="s1">&#39;manners:greet&#39;</span><span class="o">].</span><span class="n">reenable</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+
+<p>Now if we call <code>rake manners:question</code> we'll see both greetings.
+Perfect!</p>
+
+<h2>And We're Done</h2>
+
+<p>Rake is a very nice piece of software and I encourage others to read up
+on it. I hope this  post gave you enough understanding to start writing
+your own tasks. Also, please do comment if there are questions or other
+areas of Rake you'd like to know about. A Rake Tasks 102 post perhaps?</p>
+
+<p><a href="/2010/06/rake-tasks-102">Rake Tasks 102 is up!</a> If
+you liked Rake Tasks 101, I think you'll enjoy 102 just as much.</p>
+</article>
+      </section>
+    </div>
+    <footer>
+  <section class="content">
+    <div id="picture"></div>
+    <p>Hi my name is Dane Harrigan. I'm a Heroku engineer working on their API team.
+I'm a Rubyist by choice and trade, but I also enjoy working with Go in my spare
+time. If I'm not hacking on something you'll find me dancing, pretending to know
+what I'm doing on a guitar or playing a video game on easy mode.
+</p>
+    <dl>
+      <dt id="twitter">twitter</dt>
+      <dd><a href="https://twitter.com/daneharrigan">@daneharrigan</a></dd>
+
+      <dt id="github">github</dt>
+      <dd><a href="https://github.com/daneharrigan">daneharrigan</a></dd>
+    </dl>
+  </section>
+</footer>
+
+  </body>
+</html>
+
