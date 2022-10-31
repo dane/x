@@ -1,0 +1,167 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter&family=Open+Sans&family=Source+Sans+Pro&display=swap');
+
+html, body, h1, h2, h3, h4, h5, p, ol, ul, li, code, pre {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font: 16px 'Inter', Helvetica, sans-serif;
+  color: #333;
+  color: rgb(79, 86, 96);
+  background: #EFEFEF;
+  background: rgba(79, 86, 96, 0.05);
+}
+
+h1 {
+  text-align: center;
+}
+
+h1, h2, h3 {
+  font-weight: bold;
+  padding-bottom: 15px;
+}
+
+h2, h3 {
+  padding-top: 15px;
+}
+
+h2 {
+  font-size: 1.3rem;
+}
+
+h3 {
+  font-size: 1.1rem;
+}
+
+a:link, a:visited {
+  text-decoration: none;
+  color: rgb(88, 101, 242);
+}
+
+a:active, a:hover {
+  text-decoration: underline;
+}
+
+p {
+  margin-bottom: 15px;
+}
+
+header {
+  border-bottom: 1px solid #EFEFEF;
+}
+
+main {
+  line-height: 1.5rem;
+}
+
+header, main {
+  background: #FFF;
+}
+
+header, footer, main {
+  padding: 20px 0;
+}
+
+code {
+  background: #F2F3F5; 
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.98rem;
+}
+
+p code {
+  padding: 0 4px;
+  border-radius: 4px;
+}
+
+
+pre code {
+  display: block;
+  padding: 10px 15px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+}
+
+h1#post-title {
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+
+.container {
+  max-width: 750px;
+  padding: 0 20px;
+  margin: 0 auto;
+}
+
+header .container a:link,
+header .container a:visited {
+  color: #333;
+  color: rgb(79, 86, 96);
+}
+
+header .container > a:link,
+header .container > a:visited {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+header nav {
+  float: right;
+}
+
+header nav li {
+  display: inline-block;
+  margin-left: 15px;
+}
+
+article time {
+  display: block;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #999;
+}
+
+main > ol > li {
+  margin-bottom: 45px;
+}
+
+footer .container {
+  padding: 15px 0;
+  margin: 40px auto;
+}
+
+footer .container div {
+  float: left;
+  width: 50%;
+  font-size: 0.9rem;
+  color: rgba(38,52,74,.4); 
+}
+
+footer nav svg {
+  height: 30px;
+  width: 30px;
+  opacity: 0.4;
+  fill: #5865F2;
+}
+
+footer nav a:hover svg,
+footer nav a:active svg {
+  opacity: 1;
+}
+
+footer nav,
+header nav {
+  float: right;
+}
+
+header .container,
+footer .container {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+header nav li,
+footer nav li {
+  display: inline-block;
+  margin-right: 30px;
+}
